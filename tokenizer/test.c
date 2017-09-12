@@ -12,14 +12,11 @@ int main() {
   char *t4 = "          ";
   char *t5 = " HelloWorld";
 
-  //printf("Start\n" );
-  mytoc(t1, ' ');
-  //printf("S1 ended\n" );
-
-  mytoc(s2, ' ');
-  mytoc(s3, ' ');
-  mytoc(s4, ' ');
-  mytoc(s5, ' ');
+    mytoc(t1, ' ');
+    mytoc(t2, ' ');
+    mytoc(t3, ' ');
+    mytoc(t4, ' ');
+    mytoc(t5, ' ');
   
   do {
     write(1, "$", 1);
