@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include "mytoc.h"
 
+//  strcopy function was copied from already uploaded code in Github
 char *strcopy(char *inStr)	/* like strdup */
 {
   char *pStr, *copy, *pCopy;
@@ -17,11 +18,9 @@ char *strcopy(char *inStr)	/* like strdup */
 }
 
 char **tokenVec;
-int tokenCount(char *s2, char delim) {
+int tokenCount(char *str, char delim) {
   int flag = 0;
   int token = 0;
-  char *str;
-  str = s2;
   if (*str == '\0') {
     return 0;
   }
@@ -50,20 +49,20 @@ int tokenCount(char *s2, char delim) {
   return token;
 }
 
-char ** storeToken(const int size, char *str, char delim){
+char ** storeToken(const int size, char *str1, char delim){
   tokenVec = (char **)calloc(size, sizeof(char *));
   int index = 0;
   while (1){
-       if (*str == '\0')
+       if (*str1 == '\0')
         break;
 
       char *tmpstr = (char*) malloc(sizeof(char));
       int indx = 0;
-      char ch = *str++;
+      char ch = *str1++;
       while ( ch != delim){
         //printf("%s\n", str );
         tmpstr[indx++] = ch;
-        ch = *str++;
+        ch = *str1++;
         //index++;
         continue;
       } //while ((ch = *str++) != ' ' || *str);
@@ -71,25 +70,26 @@ char ** storeToken(const int size, char *str, char delim){
       tmpstr[indx] = '\0';
       //printf("%s\n", tmpstr );
       tokenVec[index] = calloc(1,sizeof*tmpstr);
-      if(NULL != tmpstr){
+      if(tmpstr != NULL){
         tokenVec[index] = strcopy(tmpstr);
         index++;
       }
       //printf("%s\n", tokenVec[0]);
       //if(tmpstr != NULL)
-      //free(tmpstr);
+      free(tmpstr);
   }
   for(int i =0; i<size; i++)
       printf("%s\n", tokenVec[i] );
   return tokenVec;
 }
 
-char ** mytoc(char *str1, char delim){
+char ** mytoc(char *str2, char delim){
   //char *s1 = "Hello World test ";
   char ** tokenv;
-  int tokenNo = tokenCount(str1, delim);
+  int tokenNo = tokenCount(str2, delim);
   printf("%d\n",tokenNo );
-  tokenv = storeToken(tokenNo,str1, delim);
+  tokenv = storeToken(tokenNo,str2, delim);
+  printf("%s\n", tokenv[0]);
   return tokenv;
 }
 
