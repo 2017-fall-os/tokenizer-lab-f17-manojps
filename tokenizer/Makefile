@@ -1,2 +1,14 @@
-test:	test.c	mytoc.c
-	gcc	-o	test	test.c	mytoc.c	-Wall
+# _*_Makefile_*_
+
+CFLAG = -Wall -g
+CC = gcc
+
+test:	test.o	mytoc.o
+	cc	-o	test	test.o	mytoc.o
+test.o: test.c mytoc.h
+	cc -c test.c
+mytoc.o: mytoc.c
+	cc -c mytoc.c
+
+clean:
+	rm -f *.o *.s test
