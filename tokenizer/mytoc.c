@@ -2,207 +2,181 @@
 #include <unistd.h>
 #include <stdlib.h>
 #include <string.h>
-#include <sys/wait.h>
 #include "mytoc.h"
 
-#define BUFF_SIZE 1000
-//#define die(e) do { fprintf(stderr, "%s\n", e); exit(EXIT_FAILURE); } while (0);
+#define BUFFER 2000
 
-int exitcmp(char *userCmd) {
-  char *ecode = "exit";
-  int i;
-  int result = 0;
-  i = 0;
+// global variables
+int token_num = 0;
 
-  //printf("%s\n", userCmd);
-
-    while(ecode[i] == userCmd[i] && result == 0 )
-    {
-        if(ecode[i] == '\0' || userCmd[i] == '\0'){
-            result = 1;
-        }
-        i++;
-    }
-
-
-    return result;
-}
-
-char ** tokenize(char *userCmd1) {
-  char * token1;
-  char * ParaArray[100];
-  //char ** ParaArray;
-  int ParaIndex  = 0;
-
-  char ** param;
-
-  token1 = strtok(userCmd1, " \t\n");
-  ParaArray[ParaIndex] = token1;
-  ParaIndex++;
-  while(token1 != NULL)
-    {
-      token1 = strtok(NULL, " \t\n");
-      ParaArray[ParaIndex] = token1;
-      ParaIndex++;
-    }
-  ParaArray[ParaIndex]=NULL;
-  //printf("%s\n", ParaArray[0]);
-
-  param = ParaArray;
-
-  return param;
-}
-
-char ** tokenize2(char *userCmd2) {
-  char * token2;
-  char * ParaArray2[100];
-  //char ** ParaArray;
-  int ParaIndex2  = 0;
-
-  char ** param2;
-
-  token2 = strtok(userCmd2, ":");
-  ParaArray2[ParaIndex2] = token2;
-  ParaIndex2++;
-  while(token2 != NULL)
-    {
-      token2 = strtok(NULL, ":");
-      ParaArray2[ParaIndex2] = token2;
-      ParaIndex2++;
-    }
-  ParaArray2[ParaIndex2]=NULL;
-  //printf("%s\n", ParaArray[0]);
-
-  param2 = ParaArray2;
-
-  return param2;
-}
-
-int childProcess (char ** paramlist, char* envp[]){
-    char *const envParms[2] = {"STEPLIB=SASC.V6.LINKLIB", NULL};
-    int status;
-
-    printf("hello world (pid:%d)\n", (int) getpid());
-    int rc = fork();
-    if (rc < 0) {
-        // fork failed; exit
-        fprintf(stderr, "fork failed\n");
-        exit(1);
-    } else if (rc == 0) {
-        // child (new process)
-        printf("hello, I am child (pid:%d)\n", (int) getpid());
-        //execvp(paramlist[0], paramlist);  // runs word count
-        execve("/bin/ls", paramlist, envp);
-
-        printf("this shouldn't print out");
-        //exit(0);
-    } else {
-        int wc = wait(&status);
-        // parent goes down this path (original process)
-        //int wc = wait(NULL);
-        printf("hello, I am parent of %d (wc:%d) (pid:%d)\n", rc, wc, (int) getpid());
-        exit(1);
-    }
-    return 0;
-}
-
-
-int main(int argc, char **argv, char* envp[]) {
-  int pipes[2];
-  char buf[4096];
-  char ** token;
-  char ** tokenp;
-  char ** tokenpath;
-  char *userCmd = (char *)malloc(sizeof(char) * BUFF_SIZE);
-  char * env;
-  char * user_command;
+// user input prompt
+char * user_prompt(){
+  //struct user_input ui;
+  char *user_command0;
+  char *user_command1;
+  int n = 1;
   int i;
 
-  env = getenv("PATH");
-  printf("%s\n", env);
+  user_command0 = (char *) malloc(sizeof(user_command0));
 
-  pipe(pipes);
+  if (n==1) {
+    write(1, "$\n", 1);
+    n = read(0, user_command0, BUFFER);
+  }
 
-  //printf("%s\n", getenv("PATH"));
-  //printf("%s\n", getenv("HOME"));
-  char cwd[1024];
-  if (getcwd(cwd, sizeof(cwd)) != NULL) printf("%s\n", cwd);
+  //ui.user_command[ui.n-1] = ' ';
+  //ui.user_command[ui.n] = '\0';
 
-  token_num = token_count(env, ':');
-  printf("Token num %d\n", token_num);
-  tokenpath = mytoc(env, ':');
-  for (i=0; i<token_num; i++) printf("argv[%d] = %s\n", i, tokenpath[i]);
-  //printf("%s\n", tokenpath[2]);
+  //printf("%d\n", ui.n);
+  user_command1 = (char *)malloc(n-1);
+  //char *pstr = str;
 
-  while (1) {
-    user_command = user_prompt();
-    printf("%s\n", user_command);
-    token_num = token_count(user_command, ' ');
-    //token_store(token_num, up.user_command, ' ');
-    token = mytoc(user_command, ' ');
-    //if (exit_command(user_command)) return 0;
-    printf("MAIN\n");
-    for (i=0; i<token_num; i++) printf("argv[%d] = %s\n", i, token[i]);
+  for(int i = 0; i < n-1; i++){
+    user_command1[i] = user_command0[i];
+    //printf("%d\n", i);
+  }
+  //printf("End %d\n", i);
+  user_command1[n-1] = '\0';
 
-    //if (exit_command(user_command)) return 0;
-    if (exit_command(token[0])) return 0;
+/*
+  for(int i = 0; i < n; i++){
+    printf("%02x", user_command1[i]);
+  }
+  printf("\n");
+*/
+  return user_command1;
+}
 
-    //pid_t pid = fork();
-    //execve(token[0], token, envp);
+// count number of tokens
+int token_count(char *user_in, char delimiter){
+  int token_num = 0;
+  int token_flag = 0;
+  int i = 0;
 
-    free(token);
+  int j = 0;
+
+  //printf("%s\n", user_in);
+
+  while(user_in[i] != '\0')
+  {
+    if (user_in[i] == '\n') break;
+
+    if (user_in[i] != delimiter && token_flag != 1) {
+      token_num++;
+      token_flag = 1;
+    } else if (user_in[i] == delimiter && token_flag == 1) {
+      token_flag = 0;
+    }
+
+    if (token_flag == 1) j++;
+    else j=0;
+    //printf("char: %c\t token no: %d\t flag: %d\t%d\n", user_in[i], token_num, token_flag, j);
+    i++;
+  }
+
+  //printf("%d\n", token_num);
+  return token_num;
+}
+
+// tokenizer function
+char ** mytoc (char *user_str, char delimiter) {
+//void token_store (int token_num, char *user_str, char delimiter) {
+  //char **token_vec = NULL;
+
+  char **token_vec = (char **)calloc(token_num, sizeof(char *)*token_num);
+  //token_vec = (char **)calloc(token_num, sizeof(char *)*token_num);
+  int token_index = 0;
+  int i = 0;
+  int j= 0;
+  int m;
+  int token_flag = 0;
+  int token_len = 0;
+  int tl[token_num];
+  int start_index;
+
+  for (m = 0; m < token_num; m++)
+  {
+  tl[m] = 0;
+  //printf("%d\t%d\n", m, tl[m]);
   }
 
 
+  while(user_str[i] != '\0')
+  {
+    if (user_str[i] == '\n') break;
 
-  //printf("%s\n", token[0]);
-  while (exitcmp(token[0]) != 1) {
-    //childProcess(token, envp);
-    printf("%s\n", token[0]);
-    if (token){
-      int status;
-
-      //printf("hello world (pid:%d)\n", (int) getpid());
-      pid_t pid = fork();
-      if (pid < 0) {
-        // Failed to fork
-        write(STDERR_FILENO, "Failed to fork.\n", 16);
-        exit(EXIT_FAILURE);
-      } else if (pid == 0) {
-        // Child process
-        dup2 (pipes[1], STDOUT_FILENO);
-        close(pipes[0]);
-        close(pipes[1]);
-        execve(token[0], token, envp);
-        //int nbytes = read(link[0], foo, sizeof(foo));
-        //printf("Output: (%.*s)\n", nbytes, foo);
-        //write(STDERR_FILENO, "command not found\n", 18);
-        exit(EXIT_FAILURE);
-      } else {
-        // Parent process
-
-        int status;
-        wait(&status);
-
-        if (WIFEXITED(status) && WEXITSTATUS(status) < 0) {
-          fprintf(stderr, "program terminated with exit code: %d\n", WEXITSTATUS(status));
-        }
-        close(pipes[1]);
-        int nbytes = read(pipes[0], buf, sizeof(buf));
-        printf("Output: (%.*s)\n", nbytes, buf);
-
-
-      }
+    if (user_str[i] != delimiter && token_flag != 1) {
+      token_index++;
+      token_flag = 1;
+      start_index = i;
+      //printf("Start index %d\n", start_index);
+    } else if (user_str[i] == delimiter && token_flag == 1) {
+      token_flag = 0;
     }
 
+    if (token_flag == 1) {
+      token_len++;
+    }
+    else {
+      //printf("%d\n", j);
+      if (tl[token_index-1] == 0) {
+        tl[token_index-1] = token_len;
+      }
 
-    printf("$");
-    fgets(userCmd, BUFF_SIZE+1, stdin);
-    token = tokenize(userCmd);
-    //childProcess(token);
-    //printf("%s\n", token[0]);
-    //int arraysize = sizeof(token)/sizeof(token[0]);
-    //printf("%s\n", token[1]);
+      if (token_index > 0 && token_flag== 0) {
+        token_vec[token_index-1] = (char*) malloc(tl[token_index-1]);
+        for (j = 0; j<tl[token_index-1]; j++) {
+          //token_vec[token_index-1][j] = user_str[i-tl[token_index-1]+j];
+          token_vec[token_index-1][j] = user_str[start_index+j];
+        }
+        token_vec[token_index-1][j++] = '\0';
+      }
+      //printf("%d\n", tl[token_index-1]);
+      //printf("%s\n", );
+      token_len=0;
+    }
+    //printf("char: %c\t token no: %d\t flag: %d\t%d\n", user_str[i], token_index, token_flag, j);
+    i++;
+  }
+
+  //printf("%d\t%d\n", j, token_index);
+  if (user_str[i-1] != delimiter) tl[token_index-1] = token_len;
+
+  //for (k=0; k<token_num; k++) printf("%d\t%d\n", k, tl[k]);
+
+  if (user_str[i] == '\0' || user_str[i] == '\n') {
+    token_vec[token_index-1] = (char*) malloc(tl[token_index-1]);
+    for (j = 0; j<tl[token_index-1]; j++) {
+      //token_vec[token_index-1][j] = user_str[i-tl[token_index-1]+j];
+      token_vec[token_index-1][j] = user_str[start_index+j];
+    }
+    token_vec[token_index-1][j++] = '\0';
+  }
+
+  token_vec[token_index] = NULL;
+
+  return token_vec;
 }
 
+// program exit
+int exit_command(char *user_cmd) {
+  char *exit_code = "exit";
+  int i=0;
+  int result = 0;
+
+  printf("EXIT FUNC\n");
+
+
+
+  while(exit_code[i] == user_cmd[i] && result == 0 )
+  {
+      //printf("%02x\t%02x\n", exit_code[i], user_cmd[i]);
+      if(exit_code[i] == '\0' || user_cmd[i] == '\0'){
+          result = 1;
+      }
+      i++;
+  }
+  printf("\n");
+
+  return result;
 }
