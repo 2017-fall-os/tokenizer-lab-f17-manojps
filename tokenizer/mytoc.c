@@ -164,7 +164,7 @@ int exit_command(char *user_cmd) {
   int i=0;
   int result = 0;
 
-  printf("EXIT FUNC\n");
+  //printf("EXIT FUNC\n");
 
 
 
