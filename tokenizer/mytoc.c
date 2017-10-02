@@ -12,21 +12,38 @@ int token_num = 0;
 // user input prompt
 char * user_prompt(){
   //struct user_input ui;
+  char *user_command0;
   char *user_command1;
   int n = 1;
+  int i;
 
-  user_command1 = (char *) malloc(sizeof(user_command1));
+  user_command0 = (char *) malloc(sizeof(user_command0));
 
   if (n==1) {
     write(1, "$\n", 1);
-    n = read(0, user_command1, BUFFER);
+    n = read(0, user_command0, BUFFER);
   }
 
   //ui.user_command[ui.n-1] = ' ';
   //ui.user_command[ui.n] = '\0';
 
   //printf("%d\n", ui.n);
+  user_command1 = (char *)malloc(n-1);
+  //char *pstr = str;
 
+  for(int i = 0; i < n-1; i++){
+    user_command1[i] = user_command0[i];
+    //printf("%d\n", i);
+  }
+  //printf("End %d\n", i);
+  user_command1[n-1] = '\0';
+
+/*
+  for(int i = 0; i < n; i++){
+    printf("%02x", user_command1[i]);
+  }
+  printf("\n");
+*/
   return user_command1;
 }
 
@@ -143,17 +160,23 @@ char ** mytoc (char *user_str, char delimiter) {
 
 // program exit
 int exit_command(char *user_cmd) {
-  char *exit_code = "exit\n";
+  char *exit_code = "exit";
   int i=0;
   int result = 0;
 
+  printf("EXIT FUNC\n");
+
+
+
   while(exit_code[i] == user_cmd[i] && result == 0 )
   {
+      //printf("%02x\t%02x\n", exit_code[i], user_cmd[i]);
       if(exit_code[i] == '\0' || user_cmd[i] == '\0'){
           result = 1;
       }
       i++;
   }
+  printf("\n");
 
   return result;
 }
