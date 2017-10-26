@@ -10,5 +10,8 @@ test.o: test.c mytoc.h
 mytoc.o: mytoc.c
 	cc -c mytoc.c
 
+make demo:
+	./test
+
 clean:
 	rm -f *.o *.s test
