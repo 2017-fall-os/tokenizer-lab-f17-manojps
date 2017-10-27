@@ -7,4 +7,4 @@ Type "exit" in the command prompt to exit the program.
 Implementation Notes:
 I have used arrays and pointers to manipulate tokenizer inputs.
 C functions - malloc() and free() - was used for memory management.
-A simple Makefile was written for separate compilation and linking.
+A simple Makefile was written for separate compilation and linking. 
