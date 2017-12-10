@@ -92,10 +92,10 @@ int main(){
     token_num = token_count(user_command, ' '); /* Count number of tokens in user input */
     if (token_num > 0) {
         token = mytoc(user_command, ' '); /* Tokenize user input */
+        if (exit_command(token[0])) 
+            return 0; /* Check for exit condition */
         for (i=0; i<token_num; i++) 
             fprintf(stdout, "argv[%d] = %s\n", i, token[i]); /* Print tokens */
-        if (exit_command(user_command)) 
-            return 0; /* Check for exit condition */
         fflush(stdout);
         free(token);
     }
