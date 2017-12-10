@@ -8,16 +8,16 @@
 /* global variables */
 int token_num = 0; /* Initialize token number */
 
+
 /* This is the user prompt. It reads the input from stdin, copies the string to
    string, and returns a pointer to the copied string. */
 
 char * user_prompt(){
-  char *user_command0; /* Pointer user input */
+
+  char user_command0[BUFFER]; /* Array for user input */
   char *user_command1; /* Pointer to copied string */
   int n = 1;
-  int i;
-
-  user_command0 = (char *) malloc(sizeof(user_command0)); /* Allocates memory for user input */
+  int i, j=0;
 
   /* Reads user input */
   if (n==1) {
@@ -25,14 +25,13 @@ char * user_prompt(){
     n = read(0, user_command0, BUFFER);
   }
 
-  user_command1 = (char *)malloc(n-1);
-
   /* Copy user input into a string */
+  user_command1 = (char *)malloc(n);
   for(int i = 0; i < n-1; i++){
     user_command1[i] = user_command0[i];
   }
   user_command1[n-1] = '\0';
-
+  
   return user_command1;
 }
 
@@ -140,10 +139,10 @@ char ** mytoc (char *user_str, char delimiter) {
 /* Checks "exit" command in user input. If the "exit" command is found, then it
    terminates the tokenizer. */
 int exit_command(char *user_cmd) {
-  char *exit_code = "exit";
-  int i=0;
+  char *exit_code = "exit\0";
+  int i=0, j=0;
   int result = 0;
-
+  
   while(exit_code[i] == user_cmd[i] && result == 0 )
   {
       if(exit_code[i] == '\0' || user_cmd[i] == '\0'){

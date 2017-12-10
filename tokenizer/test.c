@@ -14,7 +14,6 @@ int main(){
   char **token3;
   char **token4;
   char **token5;
-  char **token6;
 
   /* Predefines test case inputs */
   char *t1;
@@ -34,34 +33,56 @@ int main(){
       /* Test case 1 */
       printf("%s\n", t1);
       token_num = token_count(t1, ' ');
-      token1 = mytoc(t1, ' ');
-      for (i=0; i<token_num; i++) printf("argv[%d] = %s\n", i, token1[i]);
-
+      if (token_num>0) {
+          token1 = mytoc(t1, ' ');
+          for (i=0; i<token_num; i++) 
+              fprintf(stdout, "argv[%d] = %s\n", i, token1[i]);
+          free(token1);
+      }
+      
       /* Test case 2 */
       printf("%s\n", t2);
       token_num = token_count(t2, ' ');
-      token2 = mytoc(t2, ' ');
-      for (i=0; i<token_num; i++) printf("argv[%d] = %s\n", i, token2[i]);
+      if (token_num>0) {
+          token2 = mytoc(t2, ' ');
+          for (i=0; i<token_num; i++) 
+              fprintf(stdout, "argv[%d] = %s\n", i, token2[i]);
+          free(token2);
+      }
 
       /* Test case 3 */
       printf("%s\n", t3);
       token_num = token_count(t3, ' ');
-      token3 = mytoc(t3, ' ');
-      for (i=0; i<token_num; i++) printf("argv[%d] = %s\n", i, token3[i]);
+      if (token_num>0) {
+          token3 = mytoc(t3, ' ');
+          for (i=0; i<token_num; i++) 
+              fprintf(stdout, "argv[%d] = %s\n", i, token3[i]);
+          free(token3);
+      }
 
       /* Test case 4 */
       printf("%s\n", t4);
       token_num = token_count(t4, ' ');
-      token4 = mytoc(t4, ' ');
-      for (i=0; i<token_num; i++) printf("argv[%d] = %s\n", i, token4[i]);
+      if (token_num>0) {
+          token4 = mytoc(t4, ' ');
+          for (i=0; i<token_num; i++) 
+              fprintf(stdout, "argv[%d] = %s\n", i, token4[i]);
+          free(token4);
+      }
+
 
       /* Test case 4 */
       printf("%s\n", t5);
       token_num = token_count(t5, ' ');
-      token5 = mytoc(t5, ' ');
-      for (i=0; i<token_num; i++) printf("argv[%d] = %s\n", i, token5[i]);
-      //free(token5);
-
+      if (token_num>0) {
+          token5 = mytoc(t5, ' ');
+          for (i=0; i<token_num; i++) 
+              fprintf(stdout, "argv[%d] = %s\n", i, token5[i]);
+          free(token5);
+      }
+      
+      fflush(stdout); 
+      
       break;
     }
 
@@ -69,10 +90,17 @@ int main(){
   while (1) {
     user_command = user_prompt(); /* User input */
     token_num = token_count(user_command, ' '); /* Count number of tokens in user input */
-    token = mytoc(user_command, ' '); /* Tokenize user input */
-    for (i=0; i<token_num; i++) printf("argv[%d] = %s\n", i, token[i]); /* Print tokens */
-    if (exit_command(user_command)) return 0; /* Check for exit condition */
-    free(token);
+    if (token_num > 0) {
+        token = mytoc(user_command, ' '); /* Tokenize user input */
+        for (i=0; i<token_num; i++) 
+            fprintf(stdout, "argv[%d] = %s\n", i, token[i]); /* Print tokens */
+        if (exit_command(user_command)) 
+            return 0; /* Check for exit condition */
+        fflush(stdout);
+        free(token);
+    }
+    
+
   }
 
   return 0;
